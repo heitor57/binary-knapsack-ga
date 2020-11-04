@@ -1,4 +1,4 @@
-# Genetic Algorithm with Real Representation
+# Genetic Algorithm To Solve Binary Knapsack Problem
 
 ## Configuration
 
