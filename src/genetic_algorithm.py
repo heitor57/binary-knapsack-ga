@@ -130,4 +130,5 @@ fout = open(DIRS['RESULT']+string+'.json','w')
 fout.write(df.to_json(orient='records',lines=False))
 fout.close()
 
-print(f"Optimal solution OFV is {objective.compute(Individual(genome=binary_knapsack.optimal_solution)):.2f}")
+if config['general']['print_table']:
+    print(f"Optimal solution OFV is {objective.compute(Individual(genome=binary_knapsack.optimal_solution)):.2f}")

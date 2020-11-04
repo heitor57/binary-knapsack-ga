@@ -16,7 +16,6 @@ class BinaryKnapsack:
         self.optimal_solution=np.array(self.optimal_solution)
         self.utilities=np.array(self.utilities)
         self.weights=np.array(self.weights)
-        print(self)
     def is_viable(self,solution):
         return True if np.sum(self.weights[solution])<=self.capacity else False
         
