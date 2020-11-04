@@ -55,15 +55,20 @@ class CrossPoint(CrossPolicy):
         pass
 
     def cross(self,ind1,ind2):
-        nind1= Individual(genome=np.zeros(len(ind1.genome),type=np.bool))
-        nind2= Individual(genome=np.zeros(len(ind1.genome),type=np.bool))
+        # nind1= Individual(genome=np.zeros(len(ind1.genome),dtype=np.bool))
+        # nind2= Individual(genome=np.zeros(len(ind1.genome),dtype=np.bool))
         idx = random.randint(1,len(ind1.genome)-2)
 
-        new_genome = ind1.genome[:idx]
-        new_genome.append(ind2.genome[idx:])
+        new_genome = np.zeros(len(ind1.genome))
+        new_genome[:idx] = ind1.genome[:idx]
+        new_genome[idx:] = ind2.genome[idx:]
+        # new_genome = np.append(new_genome,ind2.genome[idx:])
         nind1 = Individual(new_genome)
 
-        new_genome = ind1.genome[idx:]
-        new_genome.append(ind2.genome[:idx])
+        new_genome = np.zeros(len(ind1.genome))
+        new_genome[:idx] = ind2.genome[:idx]
+        new_genome[idx:] = ind1.genome[idx:]
+        # new_genome = ind2.genome[:idx]
+        # new_genome = np.append(new_genome,ind1.genome[idx:])
         nind2 = Individual(new_genome)
         return nind1, nind2

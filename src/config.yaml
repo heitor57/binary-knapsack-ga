@@ -8,13 +8,13 @@ general:
   print_table: True
 parameters:
   mutation_policy:
-    default: "UniformRandomSolutionSpace"
+    default: "InvertBit"
     pretty_name: "Mutation Policy"
   cross_policy:
-    default: "BLXab"
+    default: "CrossPoint"
     pretty_name: "Cross Policy"
   selection_policy:
-    default: "Roulette"
+    default: "RankRoulette"
     pretty_name: "Selection Policy"
   num_pop:
     default: 50 # Population size
@@ -34,6 +34,9 @@ parameters:
   eid: 
     default: 1
     pretty_name: "Execution ID"
+  instance_name: 
+    default: "p08"
+    pretty_name: "Instance name"
   # min_value:
   #   default: -2.0 # Linear space minimum number
   #   pretty_name: "Min value"

@@ -49,7 +49,11 @@ class Roulette(SelectionPolicy):
 class RankRoulette(SelectionPolicy):
     def __init__(self,population):
         super().__init__(population)
-        ranks = np.argsort([ind.ofv for ind in self.population])
+        indexes = np.argsort([ind.ofv for ind in self.population])
+        i=1
+        ranks = np.zeros(len(self.population))
+        for index in indexes:
+            ranks[index] = i
         self.probabilities = ranks/np.sum(ranks)
     def select(self):
         r = np.random.random()

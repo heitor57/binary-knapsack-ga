@@ -4,8 +4,8 @@ class BinaryKnapsackObjective:
     def __init__(self, binary_knapsack):
         self.binary_knapsack = binary_knapsack
     def compute(self, ind):
-        value = np.sum(self.binary_knapsack.utilities)*\
-            (1-(np.sum(self.binary_knapsack.weights)-self.capacity)/self.capacity)
+        value = np.sum(self.binary_knapsack.utilities[ind.genome])*\
+            (1-(np.sum(self.binary_knapsack.weights[ind.genome])-self.binary_knapsack.capacity)/self.binary_knapsack.capacity)
         ind.ofv = value
         return value
 class Objective:

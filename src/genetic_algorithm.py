@@ -1,20 +1,22 @@
 # coding: utf-8
-import math
-import random
-import argparse
-
 import numpy as np
 import pandas as pd
 import yaml
 
-from lib import *
-
+import math
+import random
+import argparse
+import collections
 import sys
 from pathlib import Path
 import os
 
+from lib import *
+
+
 parser = argparse.ArgumentParser()
 config = yaml.load(open('config.yaml'), Loader=yaml.FullLoader)
+config['cross_policy'] = collections.defaultdict(dict,config['cross_policy'])
 parameters = config['parameters']
 
 for k, v in parameters.items():
@@ -30,15 +32,16 @@ num_cross = int((cross_rate * num_pop)/2)
 num_no_cross = num_pop-2*num_cross
 
 # information to catch from algorithm
-
-objective = Objective()
-cross_policy = eval(parameters['cross_policy']['value'])(min_value,max_value,**config['cross_policy'][parameters['cross_policy']['value']])
-mutation_policy = eval(parameters['mutation_policy']['value'])(mutation_rate,min_value,max_value)
+binary_knapsack = BinaryKnapsack()
+binary_knapsack.load(DIRS['INPUT']+parameters['instance_name']['value'])
+objective = BinaryKnapsackObjective(binary_knapsack)
+cross_policy = eval(parameters['cross_policy']['value'])(**config['cross_policy'][parameters['cross_policy']['value']])
+mutation_policy = eval(parameters['mutation_policy']['value'])(mutation_rate)
 
 population = []
 for i in range(num_pop):
     ind = Individual()
-    ind.rand_genome(num_genes,min_value,max_value)
+    ind.rand_genome_bool(len(binary_knapsack.weights))
     population.append(ind)
     objective.compute(ind)
 
@@ -46,14 +49,14 @@ columns = ['#Generation','Best genome','Best fitness','Mean fitness', 'Median fi
 df = pd.DataFrame([],columns = columns)
 df = df.set_index(columns[0])
 
-best_ind = population[np.argmin([ind.ofv for ind in population])]
+best_ind = population[np.argmax([ind.ofv for ind in population])]
 ofvs = [ind.ofv for ind in population]
-df.loc[1] = [','.join(map(lambda x: f'{x:.5f}',best_ind.genome)), f'{best_ind.ofv:.4}',f'{np.mean(ofvs):.4}',f'{np.median(ofvs):.4}',f'{np.max(ofvs):.4}']
+df.loc[1] = [','.join(map(lambda x: f'{x:.0f}',best_ind.genome)), f'{best_ind.ofv:.4}',f'{np.mean(ofvs):.4}',f'{np.median(ofvs):.4}',f'{np.min(ofvs):.4}']
 
 for i in range(2,num_generations+1):
+
     new_population = []
     # Cross
-    choices = list(range(len(population)))
     selection_policy=eval(parameters['selection_policy']['value'])(population)
     for j in range(num_cross):
         ind1=selection_policy.select()
@@ -77,9 +80,9 @@ for i in range(2,num_generations+1):
     for ind in population:
         objective.compute(ind)
 
-    best_ind = population[np.argmin([ind.ofv for ind in population])]
+    best_ind = population[np.argmax([ind.ofv for ind in population])]
     ofvs = [ind.ofv for ind in population]
-    df.loc[i] = [','.join(map(lambda x: f'{x:.5f}',best_ind.genome)), f'{best_ind.ofv:.4}',f'{np.mean(ofvs):.4}',f'{np.median(ofvs):.4}',f'{np.max(ofvs):.4}']
+    df.loc[i] = [','.join(map(lambda x: f'{x:.0f}',best_ind.genome)), f'{best_ind.ofv:.4}',f'{np.mean(ofvs):.4}',f'{np.median(ofvs):.4}',f'{np.min(ofvs):.4}']
 df = df.reset_index()
 
 if config['general']['print_table']:
@@ -122,8 +125,8 @@ if config['general']['print_table']:
 
 
 string=get_parameters_name({k: v['value'] for k,v in parameters.items()})
-Path(os.path.dirname(DIRS['DATA']+string)).mkdir(parents=True, exist_ok=True)
+Path(os.path.dirname(DIRS['RESULT']+string)).mkdir(parents=True, exist_ok=True)
 
-fout = open(DIRS['DATA']+string+'.json','w')
+fout = open(DIRS['RESULT']+string+'.json','w')
 fout.write(df.to_json(orient='records',lines=False))
 fout.close()
