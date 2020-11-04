@@ -1,0 +1,45 @@
+cross_policy:
+  BLXa:
+    alpha: 0.5
+  BLXab:
+    alpha: 0.75
+    beta: 0.25
+general:
+  print_table: True
+parameters:
+  mutation_policy:
+    default: "UniformRandomSolutionSpace"
+    pretty_name: "Mutation Policy"
+  cross_policy:
+    default: "BLXab"
+    pretty_name: "Cross Policy"
+  selection_policy:
+    default: "Roulette"
+    pretty_name: "Selection Policy"
+  num_pop:
+    default: 50 # Population size
+    pretty_name: "#Population"
+  num_generations: 
+    default: 50 # Number of generations
+    pretty_name: "#Generations"
+  cross_rate:
+    default: 1.0 # Rate of individuals who are going to be crossed instead of being preserved from previous generation, commonly it is going to stay in 1.0 but to be more flexible it is presented as a variable
+    pretty_name: "Cross rate"
+  elitism: 
+    default: True
+    pretty_name: "Elitism"
+  mutation_rate: 
+    default: 0.01
+    pretty_name: "Mutation rate"
+  eid: 
+    default: 1
+    pretty_name: "Execution ID"
+  # min_value:
+  #   default: -2.0 # Linear space minimum number
+  #   pretty_name: "Min value"
+  # max_value:
+  #   default: 2.0 # Linear space maximum number
+  #   pretty_name: "Max value"
+  # num_genes:
+  #   default: 2 # Number of genes
+  #   pretty_name: "#Genes"
