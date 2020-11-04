@@ -5,7 +5,7 @@ from lib.utils import *
 import pandas as pd
 import matplotlib.pyplot as plt
 parser = argparse.ArgumentParser()
-config = yaml.load(open('config.yaml'), Loader=yaml.FullLoader)
+config = yaml.safe_load(open('config.yaml'))
 parameters = config['parameters']
 for k, v in parameters.items():
     parser.add_argument('--'+k,default=v['default'],
