@@ -9,7 +9,7 @@ import pandas as pd
 from lib.constants import *
 from lib.utils import *
 TOP_N = 15
-config = yaml.load(open('config.yaml'), Loader=yaml.FullLoader)
+config = yaml.safe_load(open('config.yaml'))
 parameters = {k: [v['default']] for k, v in config['parameters'].items()}
 to_update = {
     "elitism": [False,True],
