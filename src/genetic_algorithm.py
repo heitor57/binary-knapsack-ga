@@ -45,14 +45,13 @@ for i in range(num_pop):
     population.append(ind)
     objective.compute(ind)
 
-columns = ['#Generation','Best genome','Best fitness','Mean fitness', 'Median fitness', 'Worst fitness']
+columns = ['#Generation','Best fitness','Mean fitness', 'Median fitness', 'Worst fitness']
 df = pd.DataFrame([],columns = columns)
 df = df.set_index(columns[0])
 
-best_ind = population[np.argmax([ind.ofv for ind in population])]
+best_ind = population[np.argmax([ind.ofv if binary_knapsack.is_viable(ind.genome) else np.finfo(ind.ofv.dtype).min  for ind in population ])]
 ofvs = [ind.ofv for ind in population]
-df.loc[1] = [','.join(map(lambda x: f'{x:.0f}',best_ind.genome)), f'{best_ind.ofv:.4}',f'{np.mean(ofvs):.4}',f'{np.median(ofvs):.4}',f'{np.min(ofvs):.4}']
-
+df.loc[1] = [f'{best_ind.ofv:.4f}',f'{np.mean(ofvs):.4f}',f'{np.median(ofvs):.4f}',f'{np.min(ofvs):.4f}']
 for i in range(2,num_generations+1):
 
     new_population = []
@@ -79,10 +78,10 @@ for i in range(2,num_generations+1):
 
     for ind in population:
         objective.compute(ind)
-
-    best_ind = population[np.argmax([ind.ofv for ind in population])]
+        
+    best_ind = population[np.argmax([ind.ofv if binary_knapsack.is_viable(ind.genome) else np.finfo(ind.ofv.dtype).min  for ind in population ])]
     ofvs = [ind.ofv for ind in population]
-    df.loc[i] = [','.join(map(lambda x: f'{x:.0f}',best_ind.genome)), f'{best_ind.ofv:.4}',f'{np.mean(ofvs):.4}',f'{np.median(ofvs):.4}',f'{np.min(ofvs):.4}']
+    df.loc[i] = [f'{best_ind.ofv:.4f}',f'{np.mean(ofvs):.4f}',f'{np.median(ofvs):.4f}',f'{np.min(ofvs):.4f}']
 df = df.reset_index()
 
 if config['general']['print_table']:
@@ -130,3 +129,5 @@ Path(os.path.dirname(DIRS['RESULT']+string)).mkdir(parents=True, exist_ok=True)
 fout = open(DIRS['RESULT']+string+'.json','w')
 fout.write(df.to_json(orient='records',lines=False))
 fout.close()
+
+print(f"Optimal solution OFV is {objective.compute(Individual(genome=binary_knapsack.optimal_solution)):.2f}")

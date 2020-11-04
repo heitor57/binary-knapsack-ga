@@ -17,6 +17,9 @@ class BinaryKnapsack:
         self.utilities=np.array(self.utilities)
         self.weights=np.array(self.weights)
         print(self)
+    def is_viable(self,solution):
+        return True if np.sum(self.weights[solution])<=self.capacity else False
+        
     def __str__(self):
         return f"""{self.capacity}
 w={self.weights}

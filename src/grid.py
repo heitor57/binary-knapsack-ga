@@ -8,12 +8,11 @@ from lib.constants import *
 from lib.utils import *
 
 parameters = {
-    "cross_policy": ['BLXa','BLXab'],
     "elitism": [False,True],
-    "num_generations": [100],
-    "num_pop": [50,100],
+    "num_generations": [25,50,75],
+    "num_pop": [25,50,75],
     "cross_rate": [0.6,0.8,1.0],
-    "mutation_rate": [0.01,0.1],
+    "mutation_rate": [0.01,0.05,0.1],
     # "cross_policy": ['BLXa','BLXab'],
     # "elitism": [False,True],
     # "num_generations": [25,50,100],
