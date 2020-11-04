@@ -29,7 +29,7 @@ for i,combination in enumerate(combinations):
     p = {k:v for k,v in zip(parameters_names,combination)}
     name = get_parameters_name(p)
     # print(DIRS['DATA']+name+'.json')
-    df = pd.read_json(DIRS['DATA']+name+'.json')
+    df = pd.read_json(DIRS['RESULT']+name+'.json')
     result_df.loc[i,parameters_names] = combination
     result_df.loc[i,'Best fitness'] = df.iloc[-1]['Best fitness']
     result_df.loc[i,'Mean fitness'] = df.iloc[-1]['Mean fitness']
