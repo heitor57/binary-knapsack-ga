@@ -15,7 +15,7 @@ from lib import *
 
 
 parser = argparse.ArgumentParser()
-config = yaml.load(open('config.yaml'), Loader=yaml.FullLoader)
+config = yaml.safe_load(open('config.yaml'))
 config['cross_policy'] = collections.defaultdict(dict,config['cross_policy'])
 parameters = config['parameters']
 
