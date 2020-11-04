@@ -40,7 +40,7 @@ result_df['eid']=pd.to_numeric(result_df['eid'])
 print('Top best fitness')
 print(result_df.groupby(list(set(result_df.columns)-{'Best fitness','Mean fitness','Median fitness', 'eid'})).\
       agg({i: ['mean','std'] for i in {'Best fitness','Mean fitness','Median fitness', 'eid'}}).\
-      sort_values(by=[('Best fitness','mean')],ascending=True).reset_index()[list(set(to_update.keys())-{'eid'})+['Best fitness','Mean fitness','Median fitness']].head(TOP_N))
+      sort_values(by=[('Best fitness','mean')],ascending=False).reset_index()[list(set(to_update.keys())-{'eid'})+['Best fitness','Mean fitness','Median fitness']].head(TOP_N))
 
 # print('Top mean fitness')
 # print(result_df.groupby(list(set(result_df.columns)-{'Best fitness','Mean fitness', 'eid'})).\
