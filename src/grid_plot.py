@@ -13,10 +13,10 @@ config = yaml.load(open('config.yaml'), Loader=yaml.FullLoader)
 parameters = {k: [v['default']] for k, v in config['parameters'].items()}
 to_update = {
     "elitism": [False,True],
-    "num_pop": [25,50,100],
-    "num_generations": [25,50,100],
+    "num_pop": [25,50,75],
+    "num_generations": [25,50,75],
     "cross_rate": [0.6,0.8,1.0],
-    "mutation_rate": [0.01,0.05,0.1,0.2],
+    "mutation_rate": [0.01,0.05,0.1],
     "eid": list(range(1,NUM_EXECUTIONS+1)),
 }
 parameters.update(to_update)
