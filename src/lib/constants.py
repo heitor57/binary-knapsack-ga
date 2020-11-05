@@ -24,7 +24,7 @@ class Symbols:
 COLORS = [Colors.Backgrounds.RED, Colors.Backgrounds.GREEN, Colors.Backgrounds.YELLOW, Colors.Backgrounds.BLUE, Colors.Backgrounds.MAGENTA, Colors.Backgrounds.CYAN]
 
 DIRS = {'DATA': '../data/', 'IMG': '../img/'}
-DIRS['RESULT'] = DIRS['DATA']+'result/'
+DIRS['RESULTS'] = DIRS['DATA']+'results/'
 DIRS['INPUT'] = DIRS['DATA']+'input/'
 for d in DIRS.values():
     Path(d).mkdir(parents=True, exist_ok=True)

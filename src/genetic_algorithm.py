@@ -158,9 +158,9 @@ if config['general']['print_table']:
 
 
 string=get_parameters_name({k: v['value'] for k,v in parameters.items()})
-Path(os.path.dirname(DIRS['RESULT']+string)).mkdir(parents=True, exist_ok=True)
+Path(os.path.dirname(DIRS['RESULTS']+string)).mkdir(parents=True, exist_ok=True)
 
-fout = open(DIRS['RESULT']+string+'.json','w')
+fout = open(DIRS['RESULTS']+string+'.json','w')
 fout.write(df.to_json(orient='records',lines=False))
 fout.close()
 
