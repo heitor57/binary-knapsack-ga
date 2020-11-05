@@ -48,9 +48,22 @@ for i in range(num_pop):
 columns = ['#Generation','Best fitness','Mean fitness', 'Median fitness', 'Worst fitness']
 df = pd.DataFrame([],columns = columns)
 df = df.set_index(columns[0])
-
-best_ind = population[np.argmax([ind.ofv if binary_knapsack.is_viable(ind.genome) else np.finfo(ind.ofv.dtype).min  for ind in population ])]
 ofvs = [ind.ofv for ind in population]
+argsort_indexes = np.argsort(ofvs)[::-1]
+best_ind = population[argsort_indexes[0]]
+for j in argsort_indexes:
+    if binary_knapsack.is_viable(population[j].genome):
+        best_ind = population[j]
+        break
+# best_ind = population[0]
+# best_ind_is_viable = binary_knapsack.is_viable(best_ind.genome)
+# for ind in population:
+#     is_viable = binary_knapsack.is_viable(ind.genome)
+#     if (ind.ofv >= best_ind.ofv and is_viable==best_ind_is_viable) or (not best_ind_is_viable and is_viable):
+#         best_ind = ind
+#         best_ind_is_viable = is_viable
+# best_ind = population[np.argmax()]
+# ofvs = [ind.ofv for ind in population]
 df.loc[1] = [f'{best_ind.ofv:.4f}',f'{np.mean(ofvs):.4f}',f'{np.median(ofvs):.4f}',f'{np.min(ofvs):.4f}']
 for i in range(2,num_generations+1):
 
@@ -78,9 +91,30 @@ for i in range(2,num_generations+1):
 
     for ind in population:
         objective.compute(ind)
-        
-    best_ind = population[np.argmax([ind.ofv if binary_knapsack.is_viable(ind.genome) else np.finfo(ind.ofv.dtype).min  for ind in population ])]
+
     ofvs = [ind.ofv for ind in population]
+    argsort_indexes = np.argsort(ofvs)[::-1]
+    best_ind = population[argsort_indexes[0]]
+    for j in argsort_indexes:
+        if binary_knapsack.is_viable(population[j].genome):
+            best_ind = population[j]
+            break
+
+    # best_ind = population[np.argmax(ofvs)]
+    # for i in np.argsort(ofvs)[::-1]:
+    #     if binary_knapsack.is_viable(population[i].genome):
+    #         best_ind = population[i]
+    #         break
+
+    # ofvs = [ind.ofv for ind in population]
+    # best_ind = population[0]
+    # best_ind_is_viable = binary_knapsack.is_viable(best_ind.genome)
+    # for ind in population:
+    #     is_viable = binary_knapsack.is_viable(ind.genome)
+    #     if (ind.ofv >= best_ind.ofv and is_viable==best_ind_is_viable) or (not best_ind_is_viable and is_viable):
+    #         best_ind = ind
+    #         best_ind_is_viable = is_viable
+
     df.loc[i] = [f'{best_ind.ofv:.4f}',f'{np.mean(ofvs):.4f}',f'{np.median(ofvs):.4f}',f'{np.min(ofvs):.4f}']
 df = df.reset_index()
 
