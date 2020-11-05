@@ -1,4 +1,4 @@
-#+TITLE: Algoritmo genético com representação real
+#+TITLE: Algoritmo genético para Mochila Binária
 #+SUBTITLE: Algoritmos Bioinspirados
 #+AUTHOR: Heitor Lourenço Werneck
 #+EMAIL: heitorwerneck@hotmail.com
@@ -14,6 +14,7 @@
 #+LATEX_HEADER: \usepackage{mdframed}
 #+LATEX_HEADER: \usepackage{listings}
 #+LATEX_HEADER: \usepackage{algpseudocode}
+#+LATEX_HEADER: \usepackage{hyperref}
 #+LATEX_HEADER: \usepackage[Algoritmo]{algorithm}
 #+LATEX_HEADER: \usepackage{tikz}
 #+LATEX_HEADER: \usepackage{xcolor}
@@ -86,50 +87,43 @@ Algoritmos genéticos são utilizados em diversos cenários pela natureza genera
 
 Os algoritmos genéticos também possuem a capacidade de fazer /exploitation/ e /exploration/ que são características de modelos estado da arte em diversas áreas, como por exemplo: /Multi-Armed Bandits/; Nuvem de partículas e outros. Uma característica extremamente importante para diversos cenários.
 
-Esse trabalho consiste na implementação e análise de um algoritmo genético com representação real para solução de um problema de otimização de uma função.
+Esse trabalho consiste na implementação e análise de um algoritmo genético para a solução do problema da mochila binária, sendo este um problema combinatório.
 
 * Problema
+Nesse problema temos $n$ itens, cada um com um valor de utilidade $u_i$ e peso $w_i$, o objetivo é maximizar $\sum_{i=0}^{n-1}u_i$ tal que os pesos dos itens não ultrapassem uma capacidade $c$ ($\sum_{i=0}^{n-1}w_i\leq c$).
 
-O problema é simples e consiste na minimização da função da equação ref:eq:of. 
+Para a solução do problema por meio de um algoritmo genético foi utilizado a função objetivo da equação ref:eq:of para maximização. Essa função é uma variação da função original para penalizar soluções proporcionalmente a sua violação.
+
 #+begin_export latex
 \begin{equation}
 \label{eq:of}
-F_o(x) = -20\epsilon^{-0.2}\sqrt{\frac{1}{n}\sum x_i^2} - \epsilon^{\frac{1}{n}\sum cos(2\pi x_i)} + 20 + \epsilon
+F_o(x) = \sum_{i=0}^{n-1} u_i \times (1 - (\sum_{i=0}^{n-1}w_i - c)/c)
 \end{equation}
 #+end_export
 
-É importante notar que como o problema será representado em um computador como um número real então o espaço de busca terá $2^{\text{bits}}$ possibilidades de solução, onde bits vai depender do tipo de dado, linguagem e a arquitetura. Isso mostra que é um problema difícil, pois possui uma complexidade de ordem exponencial no espaço de soluções, por isso é importante usar alguma heurística ou meta-heurística (que no caso é algoritmo genético) para solucionar esse problema caso não tenha solução analítica viável.
+Esse problema claramente tem um espaço de busca de $2^n$ combinações, isso mostra que é um problema difícil  
 
 * Solução
 
-
 ** Representação
-As estruturas básicas para o algoritmo foram determinadas da seguinte forma: os genes são números reais e não precisam de nenhuma transformação para serem aplicados na equação eqref:eq:of, essa representação é, em comparação com o número de bits utilizado na outra representação do trabalho anterior, muito mais complexa em termos de quantidade de possíveis soluções (espaço de busca bem maior), claro que o espaço de busca poderia ser ainda maior com a representação por bits, porém em termos de eficiência na busca está implementação é mais efetiva. O espaço de busca continua sendo discreto porém bem maior do que com os números de bits utilizados no trabalho anterior. Como a linguagem utilizada foi Python e nessa linguagem o tipo de dado utilizado para representar um gene (o número real) foi o float. O float em Python é majoritariamente mapeado para IEEE-754 “precisão dupla” nas plataformas, inclusive a usada para fazer o experimento. 
 
-O problema foi modelado com 2 genes, ou seja, um vetor de 2 números reais, poderia ser maior porém seria mais custoso a execução completa do algoritmo.
-
-** Espaço de busca
-
-Para guiar a busca o estado de busca de soluções foi dentro do domínio $max_{value} = -2$ e $min_{value} = 2$ (i.e. $x \in [min_{value},max_{value}]$), isso por que foi analisado que dentro dessa espaço há bons valores para minimização da função e possivelmente a solução ótima do problema.
+Para representar o problema foi utilizado um vetor binário $s$ que indica em cada índice $i$ se o item $i$ está ou não na solução/mochila (i.e., $s\in \{False\text{(Não está na mochila)},True\text{(Está na mochila)}\}^n$).
 
 ** Seleção de pais
 
-
 A estratégia de seleção de pais utilizada foi a roleta, tal que um indivíduo é selecionado a partir de um procedimento que define uma probabilidade de ser escolhido para cada indivíduo com base em seu fitness e após isso um indivíduo é escolhido a partir desse conjunto de probabilidades.
 
-Para a atribuição das probabilidades é necessário transformar o fitness, pois como é um problema de minimização então os indíviduos com menores fitness devem ser os indíviduos mais priorizados, para isso cada fitness foi aplicado em $f(x) = 1/(x+\text{Menor float positivo da linguagem})$ após isso o conjunto de probabilidades é construido $\{\frac{f(x)}{\sum_{y\in fitnesses} f(y)}: x \in fitnesses \}$. 
+Para a atribuição das probabilidades foi atribuído para cada individuo uma probabilidade de acordo com seu rank na população.
 
 ** Cruzamento
 
-Para a intensificação do espaço de busca foi definido duas estratégias de cruzamento, sendo elas: 
-- $BLX\text{-}\alpha$ que sorteia um número aleatório de uma distribuição uniforme dentro de um intervalo que é delimitado a partir dos menores e maiores genes e variados a partir da diferença do produto da diferença dos genes dos pais com \alpha e esse intervalo é limitado pelo intervalo $[min_{value},max_{value}]$, ou seja, os valores não podem passar desses limites e se passam se transformam nos limites passados;
-- $BLX\text{-}\alpha\beta$ que sorteia um número aleatório de uma distribuição uniforme dentro de um intervalo que varia dependendo de qual pai tem o maior gene assim o parâmetro $\beta$ limita o espaço de busca na direção do pior fitness e o $\alpha$ limita o espaço de busca na direção do melhor fitness, normalmente $\alpha>\beta$, e os intervalos também são limitados em $[min_{value},max_{value}]$.
+Para a intensificação do espaço de busca foi utilizado como estratégia de cruzamento o cruzamento de ponto, tal que um valor aleatório é escolhido no intervalo $[1,n-2]$ e esse ponto irá ser utilizado para o particionamento dos pedaços do genoma para criação dos filhos.
 
 Quando a taxa de cruzamento não é de 100% então indivíduos da população anterior são adicionados aleatoriamente a nova população até o limite de indivíduos.
 
 ** Mutação
 
-Para mutação dos indivíduos foi utilizado um parâmetro de taxa de mutação que define a probabilidade de um gene ser mutado. A mutação foi definida como o sorteio de um gene para ter o valor trocado através de outro sorteio de um valor dentro do intervalo $[min_{value},max_{value}]$.
+Para mutação dos indivíduos foi utilizado um parâmetro de taxa de mutação que define a probabilidade de um gene ser mutado, a mutação é basicamente a inversão do bit.
 
 ** Elitismo
 
@@ -137,18 +131,15 @@ Para garantir uma curva de convergência sem oscilação e constante busca a mel
 
 ** Parâmetros
 
-Os parâmetros mais relevantes são mostrados na tabela a seguir, através dele o algoritmo genético pode ser ajustado para obter boas soluções, fora as mudanças nos operadores de seleção (i.e., $BLX\text{-}\alpha$ e $BLX\text{-}\alpha\beta$), cruzamento e mutação (aqui, no caso, não foram estudadas outras variações).
+Os parâmetros mais relevantes são mostrados na tabela a seguir, através dele o algoritmo genético pode ser ajustado para obter boas soluções, cruzamento e mutação (aqui, no caso, não foram estudadas outras variações).
 
 #+CAPTION: Parâmetros
 | Parâmetro                | Descrição                                                           |
-| $min_{value}$            | Limite inferior do espaço de busca                                  |
-| $max_{value}$            | Limite superior do espaço de busca                                  |
 | #População               | Quantidade de indivíduos                                            |
 | #Gerações                | Quantidade de gerações                                              |
 | Taxa de cruzamento       | Taxa do número de indivíduos que vão cruzar                         |
 | Probabilidade de mutação | Probabilidade da mutação de um gene                                 |
 | Elitismo                 | Se irá usar a preservação do melhor indivíduo da população anterior |
-
 
 Uma visão geral de como o algoritmo funciona é dado no algoritmo ref:alg:ag.
 #+begin_export latex
@@ -174,8 +165,9 @@ Uma visão geral de como o algoritmo funciona é dado no algoritmo ref:alg:ag.
 
 Para a análise de resultados foi utilizado 10 execuções para cada conjunto de parâmetro, devido a natureza probabilística do problema é importante sempre sumarizar os resultados de varias execuções para ter uma ideia do resultado esperado.
 
-Também é preciso definir os parâmetros dos operadores de cruzamento, são eles:
-$BLX\text{-}\alpha$ com $\alpha = 0.5$ e $BLX\text{-}\alpha\beta$ com $\alpha = 0.75, \beta = 0.25$.
+As instâncias utilizadas foram obtidas online\footnote{\label{fn:instances}\url{https://people.sc.fsu.edu/~jburkardt/datasets/knapsack_01/}}, todas as instâncias foram executadas e avaliadas.
+# Também é preciso definir os parâmetros dos operadores de cruzamento, são eles:
+# $BLX\text{-}\alpha$ com $\alpha = 0.5$ e $BLX\text{-}\alpha\beta$ com $\alpha = 0.75, \beta = 0.25$.
 
 ** Calibragem de parâmetros
 
@@ -183,17 +175,16 @@ Para começo da análise um experimento fatorial completo será realizado. Os va
 
 #+CAPTION: Domínio de busca de cada parâmetro.
 #+NAME: tbl:hyperparameter
-|--------------------------+-------------------------------------------------|
-| Operador de cruzamento   | {$BLX\text{-}\alpha$, $BLX\text{-}\alpha\beta$} |
-| Elitismo                 | {False, True}                                   |
-| #Gerações                | {25,50,100}                                     |
-| #População               | {25,50,100}                                     |
-| Taxa de cruzamento       | {0.6, 0.8, 1.0}                                 |
-| Probabilidade de mutação | {0.01, 0.05, 0.1}                               |
-|--------------------------+-------------------------------------------------|
-
+|------------------------------------------+-------------------|
+| Elitismo                                 | {False, True}     |
+| #Gerações                                | {25,50,100}       |
+| #População                               | {25,50,100}       |
+| Taxa de cruzamento                       | {0.6, 0.8, 1.0}   |
+| Probabilidade de mutação                 | {0.01, 0.05, 0.1} |
+|------------------------------------------+-------------------|
 
 Depois da execução o top-25 de parâmetros são descritos na tabela ref:tbl:parameters, onde $\mu$ denota a média e $\sigma$ denota o desvio padrão das 10 execuções. Nessa tabela os dados são obtidos pela ultima geração de cada execução.
+
 ** Análise do experimento fatorial
 
 É possível ver que diversos conjuntos de parâmetros conseguiram chegar na mesma melhor solução, isso mostra que diversas combinações de parâmetros são viáveis para otimização desse problema. Também é interessante notar que diversas execuções para um mesmo conjunto de parâmetros conseguiram chegar no mesmo resultado, assim obtendo um desvio padrão de 0 para diversas soluções, mostrando resultados bem consistentes.
