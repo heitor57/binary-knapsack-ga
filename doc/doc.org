@@ -81,6 +81,7 @@
 
 
 * Introdução
+
 Algoritmos genéticos se referem a uma família de modelos computacionais inspirados na evolução(seleção natural e genética). Esses algoritmos representam a solução problema atráves de estruturas semelhantes a cromossomos e aplicam operadores de recombinação para preservar os dados/informações vitais cite:whitley94_genet_algor_tutor,goldenberg1989genetic. Normalmente um algoritmo genético será baseado em população e usará operadores de seleção e recombinação para buscar uma solução no espaço de busca cite:whitley94_genet_algor_tutor.
 
 Algoritmos genéticos são utilizados em diversos cenários pela natureza generalista de seu modelo, como por exemplo: sistemas de recomendação cite:naruchitparames2011friend,silva2010graph; visão computacional cite:gong2004quadtree; robôs de limpeza cite:yakoubi2016path; recuperação de informação cite:vrajitoru1998crossover e agendamento de voos cite:lee2007multi.
@@ -90,14 +91,14 @@ Os algoritmos genéticos também possuem a capacidade de fazer /exploitation/ e 
 Esse trabalho consiste na implementação e análise de um algoritmo genético para a solução do problema da mochila binária, sendo este um problema combinatório.
 
 * Problema
-Nesse problema temos $n$ itens, cada um com um valor de utilidade $u_i$ e peso $w_i$, o objetivo é maximizar $\sum_{i=0}^{n-1}u_i$ tal que os pesos dos itens não ultrapassem uma capacidade $c$ ($\sum_{i=0}^{n-1}w_i\leq c$).
+Nesse problema temos $n$ itens, cada um com um valor de utilidade $u_i$ e peso $w_i$, o objetivo é selecionar um subconjunto de itens $S \subseteq \{0,1,...,n-1\}$ que maximize $\sum_{i\in S}u_i$ tal que os pesos dos itens não ultrapassem uma capacidade $c$ ($\sum_{i\in S}w_i\leq c$).
 
 Para a solução do problema por meio de um algoritmo genético foi utilizado a função objetivo da equação ref:eq:of para maximização. Essa função é uma variação da função original para penalizar soluções proporcionalmente a sua violação. O min serve para que as soluções válidas sejam simplesmente $\sum_{i=0}^{n-1} u_i$.
 
 #+begin_export latex
 \begin{equation}
 \label{eq:of}
-F_o(x) = \sum_{i=0}^{n-1} u_i \times min((1 - (\sum_{i=0}^{n-1}w_i - c)/c),1)
+F_o(S) = \sum_{i\in S} u_i \times min((1 - (\sum_{i\in S}w_i - c)/c),1)
 \end{equation}
 #+end_export
 
@@ -111,9 +112,9 @@ Para representar o problema foi utilizado um vetor binário $s$ que indica em ca
 
 ** Seleção de pais
 
-A estratégia de seleção de pais utilizada foi a roleta, tal que um indivíduo é selecionado a partir de um procedimento que define uma probabilidade de ser escolhido para cada indivíduo com base em seu fitness e após isso um indivíduo é escolhido a partir desse conjunto de probabilidades.
+A estratégia de seleção de pais utilizada foi a roleta, tal que um indivíduo é selecionado a partir de um procedimento que define uma probabilidade de ser escolhido para cada indivíduo com base em seu rank e após isso um indivíduo é escolhido a partir desse conjunto de probabilidades.
 
-Para a atribuição das probabilidades foi atribuído para cada individuo uma probabilidade de acordo com seu rank na população.
+# Para a atribuição das probabilidades foi atribuído para cada indivíduo uma probabilidade de acordo com seu rank na população.
 
 ** Cruzamento
 
@@ -131,7 +132,7 @@ Para garantir uma curva de convergência sem oscilação e constante busca a mel
 
 ** Parâmetros
 
-Os parâmetros mais relevantes são mostrados na tabela a seguir, através dele o algoritmo genético pode ser ajustado para obter boas soluções, cruzamento e mutação (aqui, no caso, não foram estudadas outras variações).
+Os parâmetros mais relevantes são mostrados na tabela a seguir, através dele o algoritmo genético pode ser ajustado para obter soluções melhores ou piores.
 
 #+CAPTION: Parâmetros
 | Parâmetro                | Descrição                                                           |
@@ -165,10 +166,12 @@ Uma visão geral de como o algoritmo funciona é dado no algoritmo ref:alg:ag.
 
 Para a análise de resultados foi utilizado 10 execuções para cada conjunto de parâmetro, devido a natureza probabilística do problema é importante sempre sumarizar os resultados de varias execuções para ter uma ideia do resultado esperado.
 
-As instâncias utilizadas foram obtidas online\footnote{\label{fn:instances}\url{https://people.sc.fsu.edu/~jburkardt/datasets/knapsack_01/}}, todas as instâncias foram executadas e avaliadas. A tabela a seguir mostra as características das bases e um rótulo para cada uma delas.
+As instâncias utilizadas foram obtidas de \url{https://people.sc.fsu.edu/~jburkardt/datasets/knapsack_01/}, todas as instâncias foram executadas e avaliadas. A tabela a seguir mostra as características das bases.
 
 #+CAPTION: Características das instâncias.
+#+ATTR_LATEX: :align |l|l|l|l|
 | Instância | #Itens | Capacidade | Utilidade ótima |
+|-----------+--------+------------+-----------------|
 | p01       |     10 |        165 |             309 |
 | p02       |      5 |         26 |              51 |
 | p03       |      6 |        190 |             150 |
@@ -202,11 +205,11 @@ Nas instâncias maiores como p07 e p08 já há uma variação maior de resultado
 
 Na instância p07 os melhores parâmetros estão mais relacionados com diversificação da população por meio da taxa de mutação, isso mostra que talvez pela dificuldade do problema mais diversificação foi necessária para sair de soluções "obvias". Já na instância p08 as melhores soluções na média e também com um bom grau de baixa variabilidade entre execuções está mais relacionada com intensificação no espaço de busca, também é interessante notar que quando o tamanho da população é menor a variação aumenta pois não tem indivíduos o bastante para uma população mais estável e também com uma mutação maior obviamente os resultados podem variar mais.
 
-Em relação a aptidão média, é possível ver que nem sempre a população que tem um grande conjunto de bons indivíduos irá ser capaz de chegar na solução ótima já que na tabela temos a melhor solução do p08 com valor menor de média da aptidão média que a segunda melhor solução com o melhor individuo. Isso também é lógico pois indivíduos ruins podem compartilhar características do individuo ótimo e com isso ser vantajoso ter uma população diversa.
+Em relação a aptidão média, é possível ver que nem sempre a população que tem um grande conjunto de bons indivíduos irá ser capaz de chegar na solução ótima já que na tabela temos a melhor solução do p08 com valor menor de média da aptidão média que a segunda melhor solução com o melhor indivíduo. Isso também é lógico pois indivíduos ruins podem compartilhar características do indivíduo ótimo e com isso ser vantajoso ter uma população diversa.
 
 Pela mediana é possível ter uma ideia de que os indivíduos gerados não estavam saindo muito da linha do normal (não tinham muito outliers), isso é indicado pela baixa diferença entre média e mediana.
 
-Um ponto do algoritmo genético utilizado é que grande parte dos indivíduos convergiram para um ponto, aptidão média próxima do melhor indivíduo, porém ainda conseguindo diversificar.
+Um ponto do algoritmo genético utilizado é que grande parte dos indivíduos convergiram para um ponto (i.e., aptidão média próxima do melhor indivíduo) porém ainda conseguindo diversificar.
 
 
 #+begin_export latex
@@ -251,14 +254,14 @@ True & 100.0 & 100.0 & 1.0 & 0.10 & p08 & 13388607.2 & 61308.331152 & 1.145437e+
 
 ** Análise das melhores soluções
 
-Também é importante analisar os parâmetros indivídualmente (suas execuções) para entender possíveis situações e seus comportamentos. As instâncias mais difíceis serão análisadas.
+Também é importante analisar os parâmetros indivídualmente (suas execuções) para entender possíveis situações e seus comportamentos. As instâncias mais difíceis serão análisadas já que elas possuem mais resultados discrepantes entre si (uma solução melhor que outras).
 
 
 *** Instância p07
 
-Na figura ref:fig:best_executions1 é confirmado que a média realmente está estavel pois a sua linha acompanha a médiana, logo poucos indíviduos são modificados ao ponto de serem completos outliers (o que aparenta ser uma caracteristica da instância e no geral na maioria delas, pois é dificil encontrar uma instância no qual um item tem muita discrepância dos outros). O valor próximo do ótimo é encontrado rapidamente, porém a dificuldade é em achar a solução ótima. Já a pior aptidão não se mostra tão discrepante como em outros problemas, porém como esporadicamente mutação é aplicada então indivíduos sofrem piora e a curva se torna assim. Também é importante lembrar que essa é a média de varias execuções logo a linha da pior aptidão não descreve o comportamento de uma execução por si só.
+Na figura ref:fig:best_executions1 é confirmado que a média realmente está estável pois a sua linha acompanha a médiana, logo poucos indíviduos são modificados ao ponto de serem completos outliers (o que aparenta ser uma caracteristica da instância e no geral na maioria delas, pois é dificil encontrar uma instância no qual um item tem muita discrepância dos outros). O valor próximo do ótimo é encontrado rapidamente, porém a dificuldade é em achar a solução ótima. Já a pior aptidão não se mostra tão discrepante como em outros problemas, porém como esporadicamente mutação é aplicada então indivíduos sofrem piora e a curva se torna assim. Também é importante lembrar que essa é a média de varias execuções logo a linha da pior aptidão não descreve o comportamento de uma execução por si só.
 
-Outro ponto a se notar na figura ref:fig:best_executions1 é que as execuções não tem convergência rapida como em outros problemas, o que demonstra a dificuldade dessa instância e problema, porém em algumas execuções (7 e 10) é possível observar que há uma rápida convergência, isso ressalta a natureza estocástica dos algoritmos genéticos.
+Outro ponto a se notar na figura ref:fig:best_executions1 é que as execuções não tem convergência rápida como em outros problemas, o que demonstra a dificuldade dessa instância e problema, porém em algumas execuções (7 e 10) é possível observar que há uma rápida convergência, isso ressalta a natureza estocástica dos algoritmos genéticos.
 
 # Os parâmetros serão representados por uma tupla para identificação e os elementos estão na ordem das colunas da tabela.
 
@@ -273,7 +276,7 @@ Outro ponto a se notar na figura ref:fig:best_executions1 é que as execuções 
 \end{figure}
 #+end_export
 
-Na figura ref:fig:best_executions2 há uma diferença em relação ao melhor conjunto de parâmetros que devido ao aumento na taxa de mutação mais indíviduos piores são gerados, porém mais diversificação ocorreu, e no geral todas execuções parecem ter uma convergência mais lenta e as execuções são mais discrepantes (como era de se esperar), o que pode indicar que para esse problema mais intensificação é importante para uma convergência rápida. Ao mesmo tempo que a convergência parece ser mais lenta, mais mudanças de melhora parecem ocorrer nas gerações, porém não rápidas o suficiente.
+Na figura ref:fig:best_executions2 há uma diferença em relação ao melhor conjunto de parâmetros que devido ao aumento na taxa de mutação mais indíviduos piores são gerados, porém mais diversificação ocorreu, e no geral todas execuções parecem ter uma convergência mais lenta e as execuções são mais discrepantes (como era de se esperar), o que pode indicar que para essa instância mais intensificação é importante para uma convergência rápida. Ao mesmo tempo que a convergência parece ser mais lenta, mais mudanças de melhora parecem ocorrer nas gerações, porém não rápidas o suficiente.
 
 #+begin_export latex
 \begin{figure}[H]
@@ -285,7 +288,7 @@ Na figura ref:fig:best_executions2 há uma diferença em relação ao melhor con
 \end{figure}
 #+end_export
 
-Na figura ref:fig:best_executions3 há mais intensificação e isso pode ser visto pelo aproximamento da aptidão média e a aptidão mediana, também rapidamente algumas soluções convergem. O problema desse conjunto de parâmetro é que para essa instância diversificação é necessária para sair do plato de soluções proximas da ótima.
+Na figura ref:fig:best_executions3 há mais intensificação e isso pode ser visto pelo aproximamento da aptidão média e a aptidão mediana, também rapidamente algumas soluções convergem. O problema desse conjunto de parâmetro é que para essa instância um pouco de diversificação é necessário para sair do plato de soluções proximas da ótima.
 
 #+begin_export latex
 \begin{figure}[H]
@@ -310,7 +313,7 @@ A instância p08 apresentou uma grande dificuldade pelo seu espaço de busca gra
 \end{figure}
 #+end_export
 
-A figura ref:fig:best_executions5 mostra o segundo melhor conjunto de parâmetros, não muito diferente da melhor solução somente com um tamanho menor da população. Várias carácteristicas do melhor conjunto de parâmetros ainda estão presentes, porém a pior aptidão é maior durante as gerações o que mostra que os indíviduos estão todos bem próximos em relação a solução (uma característica de população pequena, muito cruzamento e pouca mutação). A variação na população também parece ser mais rápida no começo, isso pode se dever a intensificação muito forte de um grupo seleto de indíviduos.
+A figura ref:fig:best_executions5 mostra o segundo melhor conjunto de parâmetros, não muito diferente da melhor solução somente com um tamanho menor da população. Várias carácteristicas do melhor conjunto de parâmetros ainda estão presentes, porém a pior aptidão é maior durante as gerações o que mostra que os indíviduos estão todos bem próximos em relação a solução (uma característica de quando há: população pequena; muito cruzamento e pouca mutação). A variação na população também parece ser mais rápida no começo, isso pode se dever a intensificação muito forte de um grupo seleto de indíviduos.
 
 #+begin_export latex
 \begin{figure}[H]
@@ -321,7 +324,7 @@ A figura ref:fig:best_executions5 mostra o segundo melhor conjunto de parâmetro
 	\label{fig:best_executions5}
 \end{figure}
 #+end_export
-Na figura ref:fig:best_executions6 há mais outliers visivelmente, porém a manutenção da população ainda consegue se manter já que o número de indíviduos e alto e há da mais estabilidade na população no geral. As execuções tem uma convergência de maneira bem igual, não há muita variação entre as execuções no começo.
+Na figura ref:fig:best_executions6 há mais outliers visivelmente, porém a manutenção da população ainda consegue se manter já que o número de indíviduos é alto e há da mais estabilidade na população no geral. As execuções tem uma convergência de maneira bem igual, não há muita variação entre as execuções no começo.
 #+begin_export latex
 \begin{figure}[H]
 	\centering
@@ -332,115 +335,13 @@ Na figura ref:fig:best_executions6 há mais outliers visivelmente, porém a manu
 \end{figure}
 #+end_export
 
-*** Análise detalhada de uma solução
-
-Para ter uma ideia de como o algoritmo está se comportando mais detalhadamente será feito a análise dos valores a cada geração atráves de uma tabela. Foi escolhido o parâmetro (1.0,True,0.01,$BLX\text{-}\alpha\beta$,50,50) por questão de espaço e também por possuir características de soluções ótimas.
-
-O primeiro ponto que se nota na execução, na tabela ref:tbl:execution, é que a convergência é consistente. A média possui grande pertubação ao longo do tempo e não é muito consistente, as vezes próxima do melhor indivíduo e as vezes muito longe. A mediana é muito mais robusta e permanece consistente.
-
-É possível ver também que nessa execução após a geração 37 o algoritmo ficou em uma situação que não conseguia melhorar a solução e enquanto isso mais indivíduos são mutados para diversificar a população, pois ficou muito estável.
-
-#+begin_export latex
-\begin{table}
-\footnotesize
-\center
-\caption{Execução do conjunto de parâmetros (1.0,True,0.01,$BLX\text{-}\alpha\beta$,50,50)}\label{tbl:execution}
-\begin{tabular}{rrrrr}
-Geração & Melhor aptidão & Aptidão média & Aptidão mediana & Pior aptidão\\
-1 & 3.03 & 5.737 & 5.922 & 7.774\\
-2 & 2.7 & 4.921 & 5.003 & 7.598\\
-3 & 1.355 & 4.357 & 4.212 & 7.542\\
-4 & 0.9532 & 4.16 & 4.094 & 7.453\\
-5 & 0.4438 & 3.26 & 3.252 & 6.557\\
-6 & 0.4438 & 2.698 & 2.808 & 6.572\\
-7 & 0.05584 & 1.456 & 1.223 & 6.475\\
-8 & 0.03137 & 0.8548 & 0.4438 & 5.768\\
-9 & 0.02333 & 0.2106 & 0.1202 & 1.005\\
-10 & 0.006422 & 0.2036 & 0.06973 & 4.418\\
-11 & 0.001464 & 0.04493 & 0.03404 & 0.3647\\
-12 & 0.0006806 & 0.0204 & 0.01673 & 0.05888\\
-13 & 0.0002826 & 0.06061 & 0.003686 & 2.795\\
-14 & 0.0001527 & 0.002015 & 0.0009366 & 0.02844\\
-15 & 4.531e-05 & 0.0006747 & 0.0004846 & 0.002932\\
-16 & 1.212e-05 & 0.09815 & 0.0002627 & 4.892\\
-17 & 6.287e-06 & 9.305e-05 & 4.95e-05 & 0.0006566\\
-18 & 1.183e-06 & 3.243e-05 & 2.314e-05 & 9.813e-05\\
-19 & 2.919e-07 & 1.215e-05 & 9.87e-06 & 5.692e-05\\
-20 & 1.318e-07 & 0.07487 & 1.728e-06 & 3.743\\
-21 & 1.068e-07 & 6.001e-07 & 3.196e-07 & 3.501e-06\\
-22 & 6.862e-08 & 0.0006822 & 2.023e-07 & 0.03409\\
-23 & 1.097e-08 & 0.03735 & 1.584e-07 & 1.868\\
-24 & 7.703e-09 & 1.036e-07 & 8.475e-08 & 3.687e-07\\
-25 & 3.937e-09 & 4.251e-08 & 3.559e-08 & 1.528e-07\\
-26 & 1.466e-09 & 0.005874 & 8.875e-09 & 0.2937\\
-27 & 9.642e-10 & 0.07869 & 4.483e-09 & 3.935\\
-28 & 6.333e-10 & 3.304e-09 & 2.914e-09 & 1.186e-08\\
-29 & 2.241e-10 & 2.449e-09 & 1.803e-09 & 8.26e-09\\
-30 & 1.979e-10 & 1.315e-09 & 1.038e-09 & 4.441e-09\\
-31 & 1.43e-10 & 0.05931 & 3.948e-10 & 2.965\\
-32 & 6.977e-11 & 0.09286 & 2.26e-10 & 4.643\\
-33 & 4.417e-11 & 2.183e-10 & 2.154e-10 & 6.029e-10\\
-34 & 1.2e-11 & 1.676e-10 & 1.509e-10 & 7.18e-10\\
-35 & 1.2e-11 & 0.06896 & 9.304e-11 & 3.448\\
-36 & 1.2e-11 & 5.623e-11 & 4.657e-11 & 1.592e-10\\
-37 & 2.989e-13 & 0.08737 & 2.948e-11 & 4.369\\
-38 & 2.989e-13 & 7.709e-12 & 3.423e-12 & 4.182e-11\\
-39 & 2.989e-13 & 3.393e-13 & 2.989e-13 & 1.784e-12\\
-40 & 2.989e-13 & 0.09909 & 2.989e-13 & 4.954\\
-41 & 2.989e-13 & 2.989e-13 & 2.989e-13 & 2.989e-13\\
-42 & 2.989e-13 & 2.989e-13 & 2.989e-13 & 2.989e-13\\
-43 & 2.989e-13 & 2.989e-13 & 2.989e-13 & 2.989e-13\\
-44 & 2.989e-13 & 2.989e-13 & 2.989e-13 & 2.989e-13\\
-45 & 2.989e-13 & 2.989e-13 & 2.989e-13 & 2.989e-13\\
-46 & 2.989e-13 & 0.02359 & 2.989e-13 & 1.18\\
-47 & 2.989e-13 & 0.0516 & 2.989e-13 & 2.58\\
-48 & 2.989e-13 & 2.989e-13 & 2.989e-13 & 2.989e-13\\
-49 & 2.989e-13 & 0.06502 & 2.989e-13 & 3.251\\
-50 & 2.989e-13 & 2.989e-13 & 2.989e-13 & 2.989e-13\\
-\end{tabular}
-\end{table}
-#+end_export
-
-
-# \begin{tabular}{lrrr}
-# Month & \multicolumn{1}{c}{Days} & Nr.\ sold & per day\\
-# % BEGIN RECEIVE ORGTBL salesfigures
-# % END RECEIVE ORGTBL salesfigures
-# \end{tabular}
-# %
-# \begin{comment}
-# #+ORGTBL: SEND salesfigures orgtbl-to-latex :splice t :skip 2
-# | Month | Days | Nr sold | per day |
-# |-------+------+---------+---------|
-# | Jan   |   23 |      55 |     2.4 |
-# | Feb   |   21 |      16 |     0.8 |
-# | March |   22 |     278 |    12.6 |
-# #+TBLFM: $4=$3/$2;%.1f
-# \end{comment}
-
-# \begin{tabular}{lrrr}
-# Month & \multicolumn{1}{c}{Days} & Nr.\ sold & per day\\
-# % BEGIN RECEIVE ORGTBL salesfigures
-# % END RECEIVE ORGTBL salesfigures
-# \end{tabular}
-# %
-# \begin{comment}
-# #+ORGTBL: SEND salesfigures orgtbl-to-latex
-# #+EXPORT: table2.org
-# \end{comment}
-
 * Conclusão
 
-Com esse trabalho foi possível fazer a análise detalhada do comportamento de um modelo de algoritmo genético. Atráves de multiplos gráficos os parâmetros do modelo foram análisados. Como o problema a ser tratado é bem simples o algoritmo majoritariamente consegue achar o ponto ótimo do domínio, porém é interessante ver que mesmo com o espaço de busca foi bem maior em relação ao trabalho com a representação binária a convergência (para a solução ótima) foi mais rápida (nos casos que a representação binária utiliza muitos bits). 
+Com esse trabalho foi possível fazer a análise detalhada do comportamento de um modelo de algoritmo genético. Através de múltiplos gráficos os parâmetros do modelo foram analisados. Como foram usadas instâncias simples e "complexas", em instâncias simples é bem fácil obter a solução ótima, porém como o problema é difícil em instâncias levemente mais complexas nelas já começa há ficar difícil achar a solução ótima para o problema porém o algoritmo genético implementado foi capaz de dar uma boa solução, próxima da ótima.
 
-Foi interessante notar que varias execuções podem começar de pontos diferentes e cada uma ter soluções finais bastante diferentes (mesmo que pouco no valor, porém visualmente parecem bastante).
+Um ponto notado é que varias execuções podem começar de pontos diferentes e cada uma ter soluções finais bastante diferentes (mesmo que pouco no valor, porém visualmente parecem bastante).
 
-Com a representação real também foi possível ter mais métodos para intensificar a busca, como por exemplo nos operadores de cruzamentos ($BLX\text{-}\alpha$ e $BLX\text{-}\alpha\beta$), que são métodos que apresentam uma busca consistente em direção a bons indivíduos, com a representação binária o cruzamento era mais cego e não conseguia direcionar a busca com mais objetivo.
-
-Outro ponto também é que na representação binária a seleção de pais realizada era era mais aleatória que voltada para uma intensificação na busca (priorizar os melhores) comparada ao método utilizado agora de roleta.
-
-Um ponto que a representação real não apresenta é a separação de um gene em partes, porém de certa forma tenta fazer isso através de um intervalo de busca. É interessante notar que se a representação binária fosse transformada de volta em um número real poderia ser aplicado todos métodos apresentados aqui, porém com um espaço de busca variável, mas teria o custo nas transformações de bases.
-
+O problema da mochila binária foi tratado por meio de um algoritmo genético e em trabalhos futuros outros métodos poderiam ser testados para solucionar esse mesmo problema e também a tentativa de solucionar outros problemas combinatórios com a mesma representação 
 
 
 bibliography:doc.bib
