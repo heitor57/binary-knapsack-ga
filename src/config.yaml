@@ -18,10 +18,10 @@ parameters:
     default: "RankRoulette"
     pretty_name: "Selection Policy"
   num_pop:
-    default: 50 # Population size
+    default: 100 # Population size
     pretty_name: "#Population"
   num_generations: 
-    default: 50 # Number of generations
+    default: 100 # Number of generations
     pretty_name: "#Generations"
   cross_rate:
     default: 1.0 # Rate of individuals who are going to be crossed instead of being preserved from previous generation, commonly it is going to stay in 1.0 but to be more flexible it is presented as a variable
@@ -30,7 +30,7 @@ parameters:
     default: True
     pretty_name: "Elitism"
   mutation_rate: 
-    default: 0.01
+    default: 0.10
     pretty_name: "Mutation rate"
   eid: 
     default: 1

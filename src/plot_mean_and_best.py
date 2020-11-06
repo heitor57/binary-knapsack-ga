@@ -20,7 +20,7 @@ for k,v in vars(args).items():
 # with plt.style.context('seaborn-paper'):
 fig, ax = plt.subplots()
 name=get_parameters_name({k: v['value'] for k,v in parameters.items()})
-df = pd.read_json(DIRS['DATA']+name+'.json')
+df = pd.read_json(DIRS['RESULTS']+name+'.json')
 ax.plot(df['Best fitness'],label='Melhor aptidão')
 ax.plot(df['Mean fitness'],label='Aptidão média')
 ax.plot(df['Median fitness'],label='Aptidão mediana')
@@ -36,7 +36,7 @@ fig, ax = plt.subplots()
 for i in range(1,NUM_EXECUTIONS+1):
     parameters.update({'eid': {'value':i}})
     name=get_parameters_name({k: v['value'] for k,v in parameters.items()})
-    df = pd.read_json(DIRS['DATA']+name+'.json')
+    df = pd.read_json(DIRS['RESULTS']+name+'.json')
     ax.plot(df['Best fitness'],label=f'Execução {i}')
 ax.set_ylabel("Aptidão")
 ax.set_xlabel("Geração")
