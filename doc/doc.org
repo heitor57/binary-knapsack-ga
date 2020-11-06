@@ -165,13 +165,23 @@ Uma visão geral de como o algoritmo funciona é dado no algoritmo ref:alg:ag.
 
 Para a análise de resultados foi utilizado 10 execuções para cada conjunto de parâmetro, devido a natureza probabilística do problema é importante sempre sumarizar os resultados de varias execuções para ter uma ideia do resultado esperado.
 
-As instâncias utilizadas foram obtidas online\footnote{\label{fn:instances}\url{https://people.sc.fsu.edu/~jburkardt/datasets/knapsack_01/}}, todas as instâncias foram executadas e avaliadas.
-# Também é preciso definir os parâmetros dos operadores de cruzamento, são eles:
-# $BLX\text{-}\alpha$ com $\alpha = 0.5$ e $BLX\text{-}\alpha\beta$ com $\alpha = 0.75, \beta = 0.25$.
+As instâncias utilizadas foram obtidas online\footnote{\label{fn:instances}\url{https://people.sc.fsu.edu/~jburkardt/datasets/knapsack_01/}}, todas as instâncias foram executadas e avaliadas. A tabela a seguir mostra as características das bases e um rótulo para cada uma delas.
 
+#+CAPTION: Características das instâncias.
+| Instância | #Itens | Capacidade | Utilidade ótima | Função objetivo ótima |
+| p01       |     10 |        165 |             309 |                   309 |
+| p02       |      5 |         26 |              51 |                    51 |
+| p03       |      6 |        190 |             150 |                   150 |
+| p04       |      7 |         50 |             107 |                   107 |
+| p05       |      8 |        104 |             900 |                   900 |
+| p06       |      7 |        170 |            1735 |               1745.21 |
+| p07       |     15 |        750 |            1458 |               1459.94 |
+| p08       |     24 |    6404180 |        13549094 |           13552521.38 |
+
+Espera-se que a instância p08 seja a mais complicada de se tratar pelo número de itens apresentados.
 ** Calibragem de parâmetros
 
-Para começo da análise um experimento fatorial completo será realizado. Os valores para busca estão indicados tabela a seguir com o domínio de busca para cada parâmetro (tabela ref:tbl:hyperparameter).
+Para o começo da análise um experimento fatorial completo será realizado em cada instância. Os valores para busca estão indicados tabela a seguir com o domínio de busca para cada parâmetro (tabela ref:tbl:hyperparameter).
 
 #+CAPTION: Domínio de busca de cada parâmetro.
 #+NAME: tbl:hyperparameter
@@ -183,11 +193,12 @@ Para começo da análise um experimento fatorial completo será realizado. Os va
 | Probabilidade de mutação                 | {0.01, 0.05, 0.1} |
 |------------------------------------------+-------------------|
 
-Depois da execução o top-25 de parâmetros são descritos na tabela ref:tbl:parameters, onde $\mu$ denota a média e $\sigma$ denota o desvio padrão das 10 execuções. Nessa tabela os dados são obtidos pela ultima geração de cada execução.
+Depois da execução o top-2 de parâmetros são descritos na tabela ref:tbl:parameters, onde $\mu$ denota a média e $\sigma$ denota o desvio padrão das 10 execuções. Nessa tabela os dados são obtidos pela ultima geração de cada execução.
 
 ** Análise do experimento fatorial
+Primeiro, em uma visão geral, é possível ver que diversos conjuntos de parâmetros conseguiram chegar na mesma melhor solução para cada instância (não foram mostrados todos por limitação de espaço, porém em problemas pequenos até mesmo sem elitismo foi possível atingir a solução ótima), isso mostra que diversas combinações de parâmetros são viáveis para otimização desse problema quando o problema é pequeno. Também é interessante notar que diversas execuções para um mesmo conjunto de parâmetros conseguiram chegar no mesmo resultado, assim obtendo um desvio padrão de 0 para diversas soluções, mostrando resultados bem consistentes.
 
-É possível ver que diversos conjuntos de parâmetros conseguiram chegar na mesma melhor solução, isso mostra que diversas combinações de parâmetros são viáveis para otimização desse problema. Também é interessante notar que diversas execuções para um mesmo conjunto de parâmetros conseguiram chegar no mesmo resultado, assim obtendo um desvio padrão de 0 para diversas soluções, mostrando resultados bem consistentes.
+Nas instâncias maiores como p07 e p08 já há uma varia
 
 A aptidão média no geral é bem maior relativamente a melhor aptidão, isso pois eventualmente indivíduos terão genes mutados e isso causa uma oscilação na aptidão média, porém uma medida mais robusta contra outliers mostra que grande parte das execuções tiveram um bom balanço da aptidão da população. Então é importante usar uma medida robusta a outliers para não se ter um falso julgamento na avaliação da execução de algoritmos genéticos. 
 
@@ -204,41 +215,33 @@ O número de gerações e tamanho da população também em sua maioria são o m
 #+begin_export latex
 \begin{table}
 \footnotesize
-\caption{Top-25 Parâmetros e seus resultados}
+\caption{Top-2 Parâmetros e seus resultados}
 \label{tbl:parameters}
   \makebox[\textwidth]{
-\begin{tabular}{|p{0.88cm}|l|p{2cm}|l|l|l|l|l|l|l|l|l|}
-Taxa de cruzamento & \rotatebox[origin=c]{45}{Elitismo} & Probabilidade de mutação & \rotatebox[origin=c]{45}{Cruzamento} & \rotatebox[origin=c]{45}{\#Gerações} & \rotatebox[origin=c]{45}{\#População} & \multicolumn{2}{c}{Melhor aptidão} & \multicolumn{2}{|c|}{Aptidão média} & \multicolumn{2}{c|}{Aptidão mediana}\\
+\begin{tabular}{|p{0.88cm}|l|l|l|l|l|l|l|l|l|l|l|}
+%Taxa de cruzamento & \rotatebox[origin=c]{45}{Elitismo} & Probabilidade de mutação & \rotatebox[origin=c]{45}{Cruzamento} & \rotatebox[origin=c]{45}{\#Gerações} & \rotatebox[origin=c]{45}{\#População} & \multicolumn{2}{c}{Melhor aptidão} & \multicolumn{2}{|c|}{Aptidão média} & \multicolumn{2}{c|}{Aptidão mediana}\\
+% & & & & & & \multicolumn{1}{c|}{$\mu$}& \multicolumn{1}{c|}{$\sigma$} & \multicolumn{1}{|c|}{$\mu$}& \multicolumn{1}{c|}{$\sigma$} &\multicolumn{1}{c|}{$\mu$}& \multicolumn{1}{c|}{$\sigma$} \\
+\rotatebox[origin=c]{90}{Elitismo} & \rotatebox[origin=c]{90}{\#Gerações} &\rotatebox[origin=c]{90}{\#População} &\rotatebox[origin=c]{90}{Taxa de cruzamento} & \rotatebox[origin=c]{90}{Taxa de mutação} & \rotatebox[origin=c]{90}{Instância} & \multicolumn{2}{c|}{Melhor aptidão} & \multicolumn{2}{c|}{Aptidão média} & \multicolumn{2}{c|}{Aptidão mediana}\\
  & & & & & & \multicolumn{1}{c|}{$\mu$}& \multicolumn{1}{c|}{$\sigma$} & \multicolumn{1}{|c|}{$\mu$}& \multicolumn{1}{c|}{$\sigma$} &\multicolumn{1}{c|}{$\mu$}& \multicolumn{1}{c|}{$\sigma$} \\
-\rowcolor{Gray} 0.8 & False & 0.10 & $BLX\text{-}\alpha\beta$ & 100 & 100 & 4.441e-16 & 0.000e+0 & 0.439 & 0.137 & 4.441e-16 & 0.000e+0\\
-\rowcolor{Gray}0.8 & False & 0.10 & $BLX\text{-}\alpha$ & 100 & 100 & 4.441e-16 & 0.000e+0 & 0.424 & 0.123 & 4.441e-16 & 0.000e+0\\
-0.8 & True & 0.05 & $BLX\text{-}\alpha$ & 100 & 100 & 4.441e-16 & 0.000e+0 & 0.221 & 0.127 & 4.441e-16 & 0.000e+0\\
-\rowcolor{Gray}0.8 & True & 0.10 & $BLX\text{-}\alpha\beta$ & 100 & 50 & 4.441e-16 & 0.000e+0 & 0.450 & 0.223 & 4.441e-16 & 0.000e+0\\
-\rowcolor{Gray}0.8 & True & 0.10 & $BLX\text{-}\alpha\beta$ & 100 & 100 & 4.441e-16 & 0.000e+0 & 0.467 & 0.112 & 4.441e-16 & 0.000e+0\\
-1.0 & False & 0.01 & $BLX\text{-}\alpha\beta$ & 50 & 100 & 4.441e-16 & 0.000e+0 & 0.065 & 0.036 & 4.441e-16 & 0.000e+0\\
-1.0 & False & 0.01 & $BLX\text{-}\alpha\beta$ & 100 & 50 & 4.441e-16 & 0.000e+0 & 0.033 & 0.073 & 4.441e-16 & 0.000e+0\\
-1.0 & False & 0.01 & $BLX\text{-}\alpha\beta$ & 100 & 100 & 4.441e-16 & 0.000e+0 & 0.030 & 0.044 & 4.441e-16 & 0.000e+0\\
-1.0 & False & 0.05 & $BLX\text{-}\alpha$ & 100 & 100 & 4.441e-16 & 0.000e+0 & 0.181 & 0.114 & 4.441e-16 & 0.000e+0\\
-1.0 & False & 0.05 & $BLX\text{-}\alpha\beta$ & 100 & 100 & 4.441e-16 & 0.000e+0 & 0.139 & 0.057 & 4.441e-16 & 0.000e+0\\
-1.0 & False & 0.10 & $BLX\text{-}\alpha$ & 100 & 100 & 4.441e-16 & 0.000e+0 & 0.390 & 0.106 & 4.441e-16 & 0.000e+0\\
-1.0 & False & 0.10 & $BLX\text{-}\alpha\beta$ & 100 & 100 & 4.441e-16 & 0.000e+0 & 0.364 & 0.097 & 4.441e-16 & 0.000e+0\\
-1.0 & True & 0.01 & $BLX\text{-}\alpha$ & 100 & 100 & 4.441e-16 & 0.000e+0 & 0.041 & 0.034 & 4.441e-16 & 0.000e+0\\
-\rowcolor{Gray}1.0 & True & 0.01 & $BLX\text{-}\alpha\beta$ & 100 & 100 & 4.441e-16 & 0.000e+0 & 0.033 & 0.037 & 4.441e-16 & 0.000e+0\\
-1.0 & True & 0.05 & $BLX\text{-}\alpha\beta$ & 50 & 100 & 4.441e-16 & 0.000e+0 & 0.158 & 0.074 & 4.441e-16 & 0.000e+0\\
-1.0 & True & 0.05 & $BLX\text{-}\alpha\beta$ & 100 & 25 & 4.441e-16 & 0.000e+0 & 0.189 & 0.179 & 4.441e-16 & 0.000e+0\\
-1.0 & True & 0.05 & $BLX\text{-}\alpha\beta$ & 100 & 100 & 4.441e-16 & 0.000e+0 & 0.180 & 0.116 & 4.441e-16 & 0.000e+0\\
-1.0 & True & 0.10 & $BLX\text{-}\alpha\beta$ & 50 & 100 & 4.441e-16 & 0.000e+0 & 0.392 & 0.091 & 4.441e-16 & 0.000e+0\\
-0.8 & False & 0.05 & $BLX\text{-}\alpha\beta$ & 100 & 100 & 4.441e-16 & 0.000e+0 & 0.223 & 0.114 & 4.441e-16 & 0.000e+0\\
-0.6 & False & 0.10 & $BLX\text{-}\alpha\beta$ & 100 & 100 & 4.441e-16 & 0.000e+0 & 0.632 & 0.176 & 4.441e-16 & 0.000e+0\\
-1.0 & True & 0.10 & $BLX\text{-}\alpha\beta$ & 100 & 100 & 4.441e-16 & 0.000e+0 & 0.271 & 0.087 & 4.441e-16 & 0.000e+0\\
-0.6 & False & 0.01 & $BLX\text{-}\alpha\beta$ & 100 & 100 & 4.441e-16 & 0.000e+0 & 0.068 & 0.052 & 4.441e-16 & 0.000e+0\\
-1.0 & True & 0.05 & $BLX\text{-}\alpha$ & 100 & 100 & 7.993e-16 & 1.123e-15 & 0.202 & 0.107 & 7.993e-16 & 1.123e-15\\
-0.6 & True & 0.01 & $BLX\text{-}\alpha\beta$ & 100 & 100 & 7.993e-16 & 1.123e-15 & 0.035 & 0.034 & 7.993e-16 & 1.123e-15\\
-1.0 & True & 0.01 & $BLX\text{-}\alpha\beta$ & 50 & 100 & 7.993e-16 & 1.123e-15 & 0.024 & 0.049 & 7.993e-16 & 1.123e-15\\
+Sim & 100.0 & 100.0 & 1.0 & 0.10 & p01 & 327.2606 & 0.0 & 85.85395 & 27.525961 & 133.01515 & 26.229831\\
+Sim & 50.0 & 100.0 & 0.6 & 0.01 & p01 & 327.2606 & 0.0 & 135.33342 & 31.329378 & 165.93333 & 22.174781\\
+Sim & 25.0 & 50.0 & 0.8 & 0.05 & p02 & 52.4231 & 0.0 & 41.11417 & 3.519642 & 46.48462 & 2.526244\\
+Sim & 25.0 & 50.0 & 1.0 & 0.01 & p02 & 52.4231 & 0.0 & 44.01062 & 3.527260 & 46.60385 & 4.421867\\
+Sim & 25.0 & 50.0 & 0.8 & 0.05 & p03 & 154.4526 & 0.0 & 123.91282 & 5.561835 & 133.29524 & 3.107074\\
+Sim & 50.0 & 100.0 & 0.6 & 0.10 & p03 & 154.4526 & 0.0 & 120.28722 & 3.198639 & 131.34657 & 1.662969\\
+Sim & 100.0 & 100.0 & 1.0 & 0.10 & p04 & 107.0 & 0.0 & 80.21878 & 2.943002 & 89.480 & 2.021633\\
+Sim & 100.0 & 25.0 & 1.0 & 0.10 & p04 & 107.0 & 0.0 & 83.25552 & 6.248931 & 91.832 & 5.292462\\
+Sim & 50.0 & 50.0 & 0.8 & 0.05 & p05 & 1067.3077 & 0.0 & 803.52647 & 76.882953 & 872.84326 & 95.459256\\
+Sim & 100.0 & 50.0 & 1.0 & 0.05 & p05 & 1067.3077 & 0.0 & 835.77707 & 79.361214 & 875.48702 & 130.101438\\
+Sim & 50.0 & 25.0 & 0.8 & 0.05 & p06 & 1761.0353 & 0.0 & 1457.85604 & 135.422616 & 1575.88471 & 166.016128\\
+Sim & 50.0 & 50.0 & 0.8 & 0.05 & p06 & 1761.0353 & 0.0 & 1451.69812 & 76.167883 & 1633.06971 & 43.345543\\
+Sim & 100.0 & 100.0 & 1.0 & 0.01 & p07 & 1459.84892 & 0.516600 & 1362.04997 & 20.858914 & 1410.00081 & 15.276528\\
+Sim & 100.0 & 100.0 & 1.0 & 0.05 & p07 & 1459.83570 & 0.796051 & 1354.94156 & 18.754657 & 1404.33813 & 10.824842\\
+Sim & 100.0 & 100.0 & 0.6 & 0.01 & p08 & 1.355633e+07 & 18507.792137 & 1.259780e+07 & 200025.296889 & 1.286567e+07 & 137929.659943\\
+Sim & 100.0 & 50.0 & 1.0 & 0.01 & p08 & 1.354838e+07 & 35484.701418 & 1.275886e+07 & 251209.664905 & 1.300901e+07 & 195343.070295\\
 \end{tabular}
 }
 \end{table}
-
 #+end_export
 
 ** Análise das melhores soluções

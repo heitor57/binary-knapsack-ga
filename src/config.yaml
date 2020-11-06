@@ -5,7 +5,8 @@ cross_policy:
     alpha: 0.75
     beta: 0.25
 general:
-  print_table: False
+  print_table: True
+  print: True
 parameters:
   mutation_policy:
     default: "InvertBit"
