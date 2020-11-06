@@ -1,4 +1,4 @@
-#+TITLE: Algoritmo genético para Mochila Binária
+#+TITLE: Algoritmo genético para o problema da Mochila Binária
 #+SUBTITLE: Algoritmos Bioinspirados
 #+AUTHOR: Heitor Lourenço Werneck
 #+EMAIL: heitorwerneck@hotmail.com
