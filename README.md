@@ -1,4 +1,4 @@
-# Genetic Algorithm To Solve Binary Knapsack Problem
+# Genetic Algorithm to solve the Binary Knapsack Problem
 
 ## Configuration
 
